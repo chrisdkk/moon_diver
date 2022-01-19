@@ -1,0 +1,18 @@
+body {
+    background-color: #333941;
+}
+
+div {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100%;
+    gap: 12px;
+}
+
+#canvas {
+    image-rendering: pixelated;
+    background-color: white;
+}
+
