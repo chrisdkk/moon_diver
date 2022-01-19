@@ -3,7 +3,7 @@ import GameObject from "./GameObject.js";
 class Player extends GameObject {
   constructor(context, x, y, width, height, CONFIG) {
     super(context, x, y, width, height, CONFIG);
-    this.velocity = 0;
+    this.velocity = 0.1;
     this.gravity = 10;
     this.currentKeys = [];
     this.dx = 0;
@@ -32,11 +32,7 @@ class Player extends GameObject {
     this.velocity += (this.gravity * deltaTime) / 50;
     this.y += (this.velocity * deltaTime) / 50;
 
-    if (this.y + this.height > this.CONFIG.height) {
-      //set object to ground level
-      this.y = this.CONFIG.height - this.height;
-      this.velocity = 0;
-    }
+    console.log(this.velocity);
 
     if (this.currentKeys["ArrowRight"]) {
       //move on x-axis
@@ -51,8 +47,6 @@ class Player extends GameObject {
       this.velocity = -60;
     }
 
-    console.log(this.velocity);
-
     this.x += this.speed * deltaTime * this.dx;
   }
 
@@ -66,15 +60,46 @@ class Player extends GameObject {
     this.context.resetTransform();
   }
 
-  getBoundingBox() {
-    let bb = super.getBoundingBox();
+  getRight() {
+    let rbb = super.getRight();
+    rbb.h = rbb.h - 0.2;
+    rbb.y = rbb.y + 0.1;
+    return rbb;
+  }
 
-    //TODO: change bounding box
-    bb.w = bb.w + 2;
-    bb.x = bb.x - 1;
-    bb.h = bb.h + 2;
-    bb.y = bb.y - 1;
-    return bb;
+  getLeft() {
+    let lbb = super.getLeft();
+    lbb.h = lbb.h - 0.2;
+    lbb.y = lbb.y + 0.1;
+    return lbb;
+  }
+
+  getTop() {
+    let tbb = super.getTop();
+    return tbb;
+  }
+
+  getBottom() {
+    let bbb = super.getBottom();
+    return bbb;
+  }
+
+  colideRight(leftXBound) {
+    this.x = leftXBound - this.width;
+  }
+
+  colideLeft(rightXBound) {
+    this.x = rightXBound;
+  }
+
+  colideTop(bottomYBound) {
+    this.y = bottomYBound;
+    this.velocity = 10;
+  }
+
+  colideBottom(topYBound) {
+    this.y = topYBound - 10 - this.height;
+    this.velocity = 0;
   }
 }
 

@@ -7,12 +7,10 @@ let player;
 let gameObjects = [];
 let tiles = [];
 
-let level;
-
 const CONFIG = {
   width: 640,
   height: 480,
-  debug: true,
+  debug: true, //TODO fix debug mode
 };
 
 const init = () => {
@@ -29,7 +27,7 @@ const init = () => {
     [16, 9, 9, 9, 9, 9, 9, 18],
     [6, "-", "-", "-", "-", "-", "-", 4],
     [6, "-", "-", "-", "-", "-", "-", 4],
-    [6, "-", "-", 12, 13, 14, "-", 4],
+    [6, "-", "-", 12, 13, 13, 14, 4],
     [6, "-", "-", "-", "-", "-", "-", 4],
     [20, 1, 1, 1, 1, 1, 1, 22],
   ];
@@ -72,9 +70,7 @@ const update = (deltaTime) => {
   player.update(deltaTime);
 
   tiles.forEach((tile) => {
-    if (checkCollisionBetween(player, tile)) {
-      player.velocity = 0;
-    }
+    checkCollisionBetween(player, tile);
   });
 };
 
@@ -91,17 +87,51 @@ window.addEventListener("load", () => {
   init();
 });
 
-let checkCollisionBetween = (gameObjectA, gameObjectB) => {
-  let bbA = gameObjectA.getBoundingBox();
-  let bbB = gameObjectB.getBoundingBox();
+const checkCollisionBetween = (gameObjectA, gameObjectB) => {
+  let rbbA = gameObjectA.getRight();
+  let lbbA = gameObjectA.getLeft();
+  let tbbA = gameObjectA.getTop();
+  let bbbA = gameObjectA.getBottom();
+
+  let rbbB = gameObjectB.getRight();
+  let lbbB = gameObjectB.getLeft();
+  let tbbB = gameObjectB.getTop();
+  let bbbB = gameObjectB.getBottom();
 
   if (
-    bbA.x < bbB.x + bbB.w &&
-    bbA.x + bbA.w > bbB.x &&
-    bbA.y < bbB.y + bbB.h &&
-    bbA.y + bbA.h > bbB.y
+    rbbA.x < lbbB.x + lbbB.w &&
+    rbbA.x + rbbA.w > lbbB.x &&
+    rbbA.y < lbbB.y + lbbB.h &&
+    rbbA.y + rbbA.h > lbbB.y
   ) {
-    // collision happened
-    return true;
-  } else return false;
+    gameObjectA.colideRight(lbbB.x);
+    console.log("colide right");
+  }
+  if (
+    lbbA.x < rbbB.x + rbbB.w &&
+    lbbA.x + rbbA.w > rbbB.x &&
+    lbbA.y < rbbB.y + rbbB.h &&
+    lbbA.y + lbbA.h > rbbB.y
+  ) {
+    gameObjectA.colideLeft(rbbB.x + 10);
+    console.log("colide left");
+  }
+  if (
+    tbbA.x < bbbB.x + bbbB.w &&
+    tbbA.x + tbbA.w > bbbB.x &&
+    tbbA.y < bbbB.y + bbbB.h &&
+    tbbA.y + tbbA.h > bbbB.y
+  ) {
+    gameObjectA.colideTop(bbbB.y);
+    console.log("colide top");
+  }
+  if (
+    bbbA.x < tbbB.x + tbbB.w &&
+    bbbA.x + bbbA.w > tbbB.x &&
+    bbbA.y < tbbB.y + tbbB.h &&
+    bbbA.y + bbbA.h > tbbB.y
+  ) {
+    gameObjectA.colideBottom(tbbB.y + 10);
+    console.log("colide bottom");
+  }
 };

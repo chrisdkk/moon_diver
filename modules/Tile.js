@@ -32,15 +32,24 @@ class Tile extends GameObject {
     );
   }
 
-  getBoundingBox() {
-    let bb = super.getBoundingBox();
+  getRight() {
+    let rbb = super.getRight();
+    return rbb;
+  }
 
-    //TODO: change bounding box
-    bb.w = bb.w + 2;
-    bb.x = bb.x - 1;
-    bb.h = bb.h + 2;
-    bb.y = bb.y - 1;
-    return bb;
+  getLeft() {
+    let lbb = super.getLeft();
+    return lbb;
+  }
+
+  getTop() {
+    let tbb = super.getTop();
+    return tbb;
+  }
+
+  getBottom() {
+    let bbb = super.getBottom();
+    return bbb;
   }
 }
 
