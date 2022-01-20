@@ -4,16 +4,30 @@ import Tile from "./modules/Tile.js";
 let context;
 let lastTickTimestamp;
 let player;
+let deltaTime;
 let gameObjects = [];
 let tiles = [];
 
 const CONFIG = {
   width: 640,
   height: 480,
-  debug: true, //TODO fix debug mode
+  debug: true,
+};
+
+const levelState = {
+  lastTick: undefined,
+  delta: 0,
 };
 
 const init = () => {
+  // getMapData
+  // getPlayerData
+
+  // drawCanvas(mapData)
+  // drawPlater()
+
+  // startGameLoop()
+
   const canvas = document.getElementById("canvas");
   context = canvas.getContext("2d");
 
@@ -24,17 +38,17 @@ const init = () => {
   gameObjects.push(player);
 
   let levelLayout = [
-    [16, 9, 9, 9, 9, 9, 9, 18],
-    [6, "-", "-", "-", "-", "-", "-", 4],
-    [6, "-", "-", "-", "-", "-", "-", 4],
-    [6, "-", "-", 12, 13, 13, 14, 4],
-    [6, "-", "-", "-", "-", "-", "-", 4],
-    [20, 1, 1, 1, 1, 1, 1, 22],
+    [17, 10, 10, 10, 10, 10, 10, 19],
+    [7, 0, 0, 0, 0, 0, 0, 5],
+    [7, 0, 0, 0, 0, 0, 0, 5],
+    [7, 0, 0, 13, 14, 14, 15, 5],
+    [7, 0, 0, 0, 0, 0, 0, 5],
+    [21, 2, 2, 2, 2, 2, 2, 23],
   ];
 
   for (let i = 0; i < levelLayout.length; i++) {
     for (let j = 0; j < 8; j++) {
-      if (levelLayout[i][j] !== "-") {
+      if (levelLayout[i][j] !== 0) {
         let tile = new Tile(
           context,
           j * 80,
@@ -42,7 +56,7 @@ const init = () => {
           80,
           80,
           CONFIG,
-          levelLayout[i][j]
+          levelLayout[i][j] - 1
         );
         tiles.push(tile);
         gameObjects.push(tile);
@@ -50,14 +64,17 @@ const init = () => {
     }
   }
 
+  // levelState.lastTick = performance.now();
   lastTickTimestamp = performance.now();
   gameLoop();
 };
 
 const gameLoop = () => {
   //how much time has passed since last render
-  let deltaTime = performance.now() - lastTickTimestamp;
-  window.deltaTime = deltaTime;
+  // let deltaTime = performance.now() - lastTickTimestamp;
+  // window.deltaTime = deltaTime;
+
+  deltaTime = performance.now() - lastTickTimestamp;
 
   update(deltaTime);
   render();
@@ -68,10 +85,6 @@ const gameLoop = () => {
 
 const update = (deltaTime) => {
   player.update(deltaTime);
-
-  tiles.forEach((tile) => {
-    checkCollisionBetween(player, tile);
-  });
 };
 
 const render = () => {
@@ -86,52 +99,3 @@ const render = () => {
 window.addEventListener("load", () => {
   init();
 });
-
-const checkCollisionBetween = (gameObjectA, gameObjectB) => {
-  let rbbA = gameObjectA.getRight();
-  let lbbA = gameObjectA.getLeft();
-  let tbbA = gameObjectA.getTop();
-  let bbbA = gameObjectA.getBottom();
-
-  let rbbB = gameObjectB.getRight();
-  let lbbB = gameObjectB.getLeft();
-  let tbbB = gameObjectB.getTop();
-  let bbbB = gameObjectB.getBottom();
-
-  if (
-    rbbA.x < lbbB.x + lbbB.w &&
-    rbbA.x + rbbA.w > lbbB.x &&
-    rbbA.y < lbbB.y + lbbB.h &&
-    rbbA.y + rbbA.h > lbbB.y
-  ) {
-    gameObjectA.colideRight(lbbB.x);
-    console.log("colide right");
-  }
-  if (
-    lbbA.x < rbbB.x + rbbB.w &&
-    lbbA.x + rbbA.w > rbbB.x &&
-    lbbA.y < rbbB.y + rbbB.h &&
-    lbbA.y + lbbA.h > rbbB.y
-  ) {
-    gameObjectA.colideLeft(rbbB.x + 10);
-    console.log("colide left");
-  }
-  if (
-    tbbA.x < bbbB.x + bbbB.w &&
-    tbbA.x + tbbA.w > bbbB.x &&
-    tbbA.y < bbbB.y + bbbB.h &&
-    tbbA.y + tbbA.h > bbbB.y
-  ) {
-    gameObjectA.colideTop(bbbB.y);
-    console.log("colide top");
-  }
-  if (
-    bbbA.x < tbbB.x + tbbB.w &&
-    bbbA.x + bbbA.w > tbbB.x &&
-    bbbA.y < tbbB.y + tbbB.h &&
-    bbbA.y + bbbA.h > tbbB.y
-  ) {
-    gameObjectA.colideBottom(tbbB.y + 10);
-    console.log("colide bottom");
-  }
-};
