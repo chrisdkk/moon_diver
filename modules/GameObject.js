@@ -17,7 +17,20 @@ class GameObject {
 
   render() {
     if (this.CONFIG.debug) {
+      let bb = this.getBoundingBox();
+      this.context.translate(bb.x, bb.y);
+      this.context.strokeRect(0, 0, bb.w, bb.h);
+      this.context.resetTransform();
     }
+  }
+
+  getBoundingBox() {
+    return {
+      x: this.x,
+      y: this.y,
+      w: this.width,
+      h: this.height,
+    };
   }
 }
 

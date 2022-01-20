@@ -30,6 +30,10 @@ class Tile extends GameObject {
       this.height
     );
   }
+  getBoundingBox() {
+    let bb = super.getBoundingBox();
+    return bb;
+  }
 }
 
 export default Tile;

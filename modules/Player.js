@@ -5,21 +5,26 @@ class Player extends GameObject {
     super(context, x, y, width, height, CONFIG);
     this.state = {
       velocity: 0,
+      direction: 0,
       dx: 0,
       dy: 0,
       currentKeys: [],
+      movement: {
+        grounded: true,
+        right: undefined,
+        left: undefined,
+        up: undefined,
+        down: undefined,
+      },
     };
 
     this.stats = {
-      speed: 5,
+      speed: 1,
       gravity: 10,
     };
 
-    this.velocity = 0.1;
-    this.gravity = 10;
-    this.currentKeys = [];
-    this.dx = 0;
-    this.speed = 0.5;
+    this.nextPosition;
+    this.nextvelocity;
   }
 
   init() {
@@ -40,27 +45,35 @@ class Player extends GameObject {
   }
 
   update(deltaTime) {
-    //Gravitation with Euler BW Algorithm
-    if (this.x < 180 || this.state.velocity < 0) {
-      this.state.velocity += (this.stats.gravity * deltaTime) / 50;
-      this.y += (this.state.velocity * deltaTime) / 50;
-      console.log(this.state.velocity);
-    }
-
+    if (this.state.velocity < 0) this.state.movement.grounded = false;
     if (this.state.currentKeys["ArrowRight"]) {
       //move on x-axis
-      this.state.dx = 1;
+      this.state.direction = 1;
     } else if (this.state.currentKeys["ArrowLeft"]) {
-      this.state.dx = -1;
+      this.state.direction = -1;
     } else {
-      this.state.dx = 0;
+      this.state.direction = 0;
     }
 
-    if (this.state.currentKeys["Space"]) {
+    if (this.state.currentKeys["Space"] && this.state.velocity === 0) {
       this.state.velocity = -60;
     }
 
-    this.x += this.stats.speed * deltaTime * this.state.dx;
+    this.x += this.stats.speed * deltaTime * this.state.direction;
+
+    if (this.state.movement.grounded === false || this.state.velocity < 0) {
+      //Gravitation with Euler BW Algorithm
+      this.state.velocity += (this.stats.gravity * deltaTime) / 50;
+      this.y += (this.state.velocity * deltaTime) / 50;
+    } else this.state.velocity = 0;
+
+    this.nextVelocity =
+      this.state.velocity + (this.stats.gravity * deltaTime) / 50;
+
+    this.nextPos = {
+      x: this.x + this.stats.speed * deltaTime * this.state.direction,
+      y: this.y + (this.nextVelocity * deltaTime) / 50,
+    };
   }
 
   render() {
@@ -71,6 +84,106 @@ class Player extends GameObject {
     this.context.fillRect(this.x, this.y, this.width, this.height);
 
     this.context.resetTransform();
+  }
+
+  getBoundingBox() {
+    let bb = {
+      x: undefined,
+      y: undefined,
+      w: undefined,
+      h: undefined,
+    };
+
+    if (this.x !== this.nextPos.x && this.y !== this.nextPos.y) {
+      if (this.nextPos.x > this.x && this.nextPos.y > this.y) {
+        //next position to the TOP RIGHT
+        bb.x = this.x;
+        bb.y = this.nextPos.y;
+        bb.w = this.nextPos.x - this.x + this.width;
+        bb.h = this.y - this.nextPos.y + this.height;
+
+        this.state.movement.up = 1;
+        this.state.movement.down = 0;
+        this.state.movement.left = 0;
+        this.state.movement.right = 1;
+      } else if (this.nextPos.x > this.x && this.nextPos.y < this.y) {
+        //next position to the BOTTOM RIGHT
+        bb.x = this.x;
+        bb.y = this.y;
+        bb.w = this.nextPos.x - this.x + this.width;
+        bb.h = this.nextPos.y - this.y + this.height;
+        this.state.movement.up = 0;
+        this.state.movement.down = 1;
+        this.state.movement.left = 0;
+        this.state.movement.right = 1;
+      } else if (this.nextPos.x < this.x && this.nextPos.y > this.y) {
+        //next position to the TOP LEFT
+        bb.x = this.nextPos.x;
+        bb.y = this.nextPos.y;
+        bb.w = this.x - this.nextPos.x + this.width;
+        bb.h = this.y - this.nextPos.y + this.height;
+        this.state.movement.up = 1;
+        this.state.movement.down = 0;
+        this.state.movement.left = 1;
+        this.state.movement.right = 0;
+      } else if (this.nextPos.x < this.x && this.nextPos.y < this.y) {
+        //next position to the BOTTOM LEFT
+        bb.x = this.nextPos.x;
+        bb.y = this.y;
+        bb.w = this.x - this.nextPos.x + this.width;
+        bb.h = this.nextPos.y - this.y + this.height;
+        this.state.movement.up = 0;
+        this.state.movement.down = 1;
+        this.state.movement.left = 1;
+        this.state.movement.right = 0;
+      }
+    } else if (this.x === this.nextPos.x && this.y !== this.nextPos.y) {
+      if (this.y < this.nextPos.y) {
+        //next position BELOW
+        bb.x = this.x;
+        bb.y = this.y;
+        bb.w = this.width;
+        bb.h = this.nextPos.y - this.y + this.height;
+
+        this.state.movement.up = 0;
+        this.state.movement.down = 1;
+        this.state.movement.left = 0;
+        this.state.movement.right = 0;
+      } else {
+        //next position ABOVE
+        bb.x = this.x;
+        bb.y = this.nextPos.y;
+        bb.w = this.width;
+        bb.h = this.y - this.nextPos.y + this.height;
+        this.state.movement.up = 1;
+        this.state.movement.down = 0;
+        this.state.movement.left = 0;
+        this.state.movement.right = 0;
+      }
+    } else if (this.x !== this.nextPos.x && this.y === this.nextPos.y) {
+      if (this.x < this.nextPos.x) {
+        //next position RIGHT
+        bb.x = this.x;
+        bb.y = this.y;
+        bb.w = this.nextPos.x - this.x + this.width;
+        bb.h = this.height;
+        this.state.movement.up = 0;
+        this.state.movement.down = 0;
+        this.state.movement.left = 0;
+        this.state.movement.right = 1;
+      } else {
+        //next position LEFT
+        bb.x = this.nextPos.x;
+        bb.y = this.y;
+        bb.w = this.x - this.nextPos.x + this.width;
+        bb.h = this.height;
+        this.state.movement.up = 0;
+        this.state.movement.down = 0;
+        this.state.movement.left = 1;
+        this.state.movement.right = 0;
+      }
+    }
+    return bb;
   }
 }
 

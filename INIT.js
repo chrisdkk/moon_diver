@@ -71,9 +71,6 @@ const init = () => {
 
 const gameLoop = () => {
   //how much time has passed since last render
-  // let deltaTime = performance.now() - lastTickTimestamp;
-  // window.deltaTime = deltaTime;
-
   deltaTime = performance.now() - lastTickTimestamp;
 
   update(deltaTime);
@@ -85,6 +82,10 @@ const gameLoop = () => {
 
 const update = (deltaTime) => {
   player.update(deltaTime);
+
+  tiles.forEach((tile) => {
+    checkTileColission(player, tile);
+  });
 };
 
 const render = () => {
