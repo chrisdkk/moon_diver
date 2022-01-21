@@ -126,28 +126,42 @@ function hasCollided(o) {
     o[o1],
     o[o2]
   );
-  let i4 = line2lineIntersection(s1, e1, o[o3], o[o4]);
-  let i5 = line2lineIntersection(s2, e2, o[o3], o[o4]);
-  let i6 = line2lineIntersection(s3, e3, o[o3], o[o4]);
-  //
+  let i4 = line2lineIntersection(
+    Line.line1.start,
+    Line.line1.end,
+    o[o3],
+    o[o4]
+  );
+  let i5 = line2lineIntersection(
+    Line.line2.start,
+    Line.line2.end,
+    o[o3],
+    o[o4]
+  );
+  let i6 = line2lineIntersection(
+    Line.line3.start,
+    Line.line3.end,
+    o[o3],
+    o[o4]
+  );
   let tracks = [];
   if (i1) {
-    tracks.push(track(s1, e1, i1));
+    tracks.push(track(Line.line1.start, Line.line1.end, i1));
   }
   if (i2) {
-    tracks.push(track(s2, e2, i2));
+    tracks.push(track(Line.line2.start, Line.line2.end, i2));
   }
   if (i3) {
-    tracks.push(track(s3, e3, i3));
+    tracks.push(track(Line.line3.start, Line.line3.end, i3));
   }
   if (i4) {
-    tracks.push(track(s1, e1, i4));
+    tracks.push(track(Line.line1.start, Line.line1.end, i4));
   }
   if (i5) {
-    tracks.push(track(s2, e2, i5));
+    tracks.push(track(Line.line2.start, Line.line2.end, i5));
   }
   if (i6) {
-    tracks.push(track(s3, e3, i6));
+    tracks.push(track(Line.line3.start, Line.line3.end, i6));
   }
   //
   let nohitDist = 10000000;
@@ -165,6 +179,14 @@ function hasCollided(o) {
     }
   }
   return halt;
+}
+
+function track(s, e, i) {
+  dot(s);
+  dot(i);
+  line(s, i);
+  line(i, e);
+  return { dx: i.x - s.x, dy: i.y - s.y, s: s, i: i };
 }
 
 function line2lineIntersection(p0, p1, p2, p3) {

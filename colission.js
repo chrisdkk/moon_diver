@@ -1,8 +1,8 @@
-function checkTileColission(entity, tile) {
+function checkTileCollision(entity, tile) {
   let bbA = entity.getBoundingBox();
   let bbB = tile.getBoundingBox();
 
-  let state = char.state.movement;
+  let state = entity.state.movement;
 
   if (
     bbA.x < bbB.x + bbB.w &&
@@ -15,33 +15,39 @@ function checkTileColission(entity, tile) {
     if (state.grounded) {
       if (state.right) {
         collide = "right";
+        console.log("right");
       } else {
         collide = "left";
+        console.log("left");
       }
     } else {
-      switch ((state.up, state.down, state.right, state.left)) {
-        case (1, 0, 0, 0):
+      let move = `${state.up} ${state.down} ${state.right} ${state.left}`;
+      console.log(move);
+      switch (move) {
+        case "1 0 0 0":
           collide = "top";
+          console.log("top");
           break;
-        case (1, 0, 1, 0):
+        case "1 0 1 0":
           collide = "top-right";
           break;
-        case (1, 0, 0, 1):
+        case "1 0 0 1":
           collide = "top-left";
           break;
-        case (0, 1, 0, 0):
+        case "0 1 0 0":
           collide = "bottom";
+          console.log("bottom");
           break;
-        case (0, 1, 1, 0):
+        case "0 1 1 0":
           collide = "bottom-right";
           break;
-        case (0, 1, 0, 1):
+        case "0 1 0 1":
           collide = "bottom-left";
           break;
-        case (0, 0, 1, 0):
+        case "0 0 1 0":
           collide = "right";
           break;
-        case (0, 0, 0, 1):
+        case "0 0 0 1":
           collide = "left";
           break;
         default:
@@ -62,7 +68,7 @@ function tileCollision(entity, tile, cDir) {
       entity.x = tile.x + tile.width;
       break;
     case "top":
-      entity.state.velocity = 0;
+      entity.state.velocity = 5;
       entity.y = tile.y + entity.height;
       break;
     case "bottom":

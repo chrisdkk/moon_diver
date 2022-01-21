@@ -1,5 +1,5 @@
-import Player from "./modules/Player.js";
-import Tile from "./modules/Tile.js";
+import Player from "./GameObjects/Player.js";
+import Tile from "./GameObjects/Tile.js";
 
 let context;
 let lastTickTimestamp;
@@ -34,7 +34,7 @@ const init = () => {
   canvas.setAttribute("width", CONFIG.width);
   canvas.setAttribute("height", CONFIG.height);
 
-  player = new Player(context, 100, 100, 60, 80, CONFIG);
+  player = new Player(context, 100, 100, 60, 60, CONFIG);
   gameObjects.push(player);
 
   let levelLayout = [
@@ -84,7 +84,7 @@ const update = (deltaTime) => {
   player.update(deltaTime);
 
   tiles.forEach((tile) => {
-    checkTileColission(player, tile);
+    checkTileCollision(player, tile);
   });
 };
 

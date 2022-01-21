@@ -10,7 +10,7 @@ class Player extends GameObject {
       dy: 0,
       currentKeys: [],
       movement: {
-        grounded: true,
+        grounded: false,
         right: undefined,
         left: undefined,
         up: undefined,
@@ -45,7 +45,6 @@ class Player extends GameObject {
   }
 
   update(deltaTime) {
-    if (this.state.velocity < 0) this.state.movement.grounded = false;
     if (this.state.currentKeys["ArrowRight"]) {
       //move on x-axis
       this.state.direction = 1;
@@ -56,7 +55,8 @@ class Player extends GameObject {
     }
 
     if (this.state.currentKeys["Space"] && this.state.velocity === 0) {
-      this.state.velocity = -60;
+      this.state.velocity = -50;
+      this.state.movement.grounded = false;
     }
 
     this.x += this.stats.speed * deltaTime * this.state.direction;
@@ -67,13 +67,19 @@ class Player extends GameObject {
       this.y += (this.state.velocity * deltaTime) / 50;
     } else this.state.velocity = 0;
 
-    this.nextVelocity =
-      this.state.velocity + (this.stats.gravity * deltaTime) / 50;
+    if (this.state.movement.grounded) {
+      this.nextVelocity = 0;
+    } else {
+      this.nextVelocity =
+        this.state.velocity + (this.stats.gravity * deltaTime) / 50;
+    }
 
     this.nextPos = {
       x: this.x + this.stats.speed * deltaTime * this.state.direction,
       y: this.y + (this.nextVelocity * deltaTime) / 50,
     };
+
+    console.log(this.state.movement);
   }
 
   render() {
@@ -182,6 +188,15 @@ class Player extends GameObject {
         this.state.movement.left = 1;
         this.state.movement.right = 0;
       }
+    } else if (this.x === this.nextPos.x && this.y === this.nextPos.y) {
+      bb.x = this.x;
+      bb.y = this.y;
+      bb.w = this.width;
+      bb.h = this.height;
+      this.state.movement.up = 0;
+      this.state.movement.down = 0;
+      this.state.movement.left = 0;
+      this.state.movement.right = 0;
     }
     return bb;
   }
