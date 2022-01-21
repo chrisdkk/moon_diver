@@ -61,8 +61,8 @@ class Player extends GameObject {
 
     this.x += this.stats.speed * deltaTime * this.state.direction;
 
-    if (this.state.movement.grounded === false || this.state.velocity < 0) {
-      //Gravitation with Euler BW Algorithm
+    if (this.state.movement.grounded === false) {
+      // Gravitation with Euler BW Algorithm
       this.state.velocity += (this.stats.gravity * deltaTime) / 50;
       this.y += (this.state.velocity * deltaTime) / 50;
     } else this.state.velocity = 0;
@@ -78,8 +78,6 @@ class Player extends GameObject {
       x: this.x + this.stats.speed * deltaTime * this.state.direction,
       y: this.y + (this.nextVelocity * deltaTime) / 50,
     };
-
-    console.log(this.state.movement);
   }
 
   render() {

@@ -7,11 +7,29 @@ let player;
 let deltaTime;
 let gameObjects = [];
 let tiles = [];
+let collisionMap = [];
 
 const CONFIG = {
-  width: 640,
-  height: 480,
+  width: 320,
+  height: 256,
   debug: true,
+};
+
+const world = {
+  tilesize: 32,
+  level: {
+    map: [
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [3, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+      [2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+    ],
+    columns: 8,
+  },
 };
 
 const levelState = {
@@ -34,32 +52,17 @@ const init = () => {
   canvas.setAttribute("width", CONFIG.width);
   canvas.setAttribute("height", CONFIG.height);
 
-  player = new Player(context, 100, 100, 60, 60, CONFIG);
+  loadLevel(world.level.map);
+
+  player = new Player(context, 0, 0, 60, 60, CONFIG);
   gameObjects.push(player);
 
-  let levelLayout = [
-    [17, 10, 10, 10, 10, 10, 10, 19],
-    [7, 0, 0, 0, 0, 0, 0, 5],
-    [7, 0, 0, 0, 0, 0, 0, 5],
-    [7, 0, 0, 13, 14, 14, 15, 5],
-    [7, 0, 0, 0, 0, 0, 0, 5],
-    [21, 2, 2, 2, 2, 2, 2, 23],
-  ];
+  collisionMap = levelLayout;
 
   for (let i = 0; i < levelLayout.length; i++) {
     for (let j = 0; j < 8; j++) {
       if (levelLayout[i][j] !== 0) {
-        let tile = new Tile(
-          context,
-          j * 80,
-          i * 80,
-          80,
-          80,
-          CONFIG,
-          levelLayout[i][j] - 1
-        );
-        tiles.push(tile);
-        gameObjects.push(tile);
+        collisionMap[i][j] = 1;
       }
     }
   }
@@ -100,3 +103,23 @@ const render = () => {
 window.addEventListener("load", () => {
   init();
 });
+
+function loadLevel(levelMap) {
+  for (let i = 0; i < world.level.map.length; i++) {
+    for (let j = 0; j < 8; j++) {
+      if (world.level.map[i][j] !== 0) {
+        let tile = new Tile(
+          context,
+          j * 80,
+          i * 80,
+          80,
+          80,
+          CONFIG,
+          world.level.map[i][j] - 1
+        );
+        tiles.push(tile);
+        gameObjects.push(tile);
+      }
+    }
+  }
+}

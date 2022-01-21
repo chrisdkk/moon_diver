@@ -15,10 +15,8 @@ function checkTileCollision(entity, tile) {
     if (state.grounded) {
       if (state.right) {
         collide = "right";
-        console.log("right");
       } else {
         collide = "left";
-        console.log("left");
       }
     } else {
       let move = `${state.up} ${state.down} ${state.right} ${state.left}`;
@@ -26,7 +24,6 @@ function checkTileCollision(entity, tile) {
       switch (move) {
         case "1 0 0 0":
           collide = "top";
-          console.log("top");
           break;
         case "1 0 1 0":
           collide = "top-right";
@@ -36,7 +33,6 @@ function checkTileCollision(entity, tile) {
           break;
         case "0 1 0 0":
           collide = "bottom";
-          console.log("bottom");
           break;
         case "0 1 1 0":
           collide = "bottom-right";
@@ -68,14 +64,18 @@ function tileCollision(entity, tile, cDir) {
       entity.x = tile.x + tile.width;
       break;
     case "top":
-      entity.state.velocity = 5;
-      entity.y = tile.y + entity.height;
+      entity.state.velocity = 1;
+      entity.y = entity.y;
       break;
     case "bottom":
       entity.state.movement.grounded = true;
       entity.y = tile.y - entity.height;
       break;
     case "top-right":
+      entity.state.velocity = 1;
+      entity.y = entity.y;
+      entity.x = entity.x - (entity.nextPos.x - entity.x);
+      break;
     case "top-left":
     case "bottom-right":
     case "bottom-left":
