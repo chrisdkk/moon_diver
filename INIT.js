@@ -7,16 +7,12 @@ let player;
 let deltaTime;
 let gameObjects = [];
 let tiles = [];
+let collisionMap = [];
 
 const CONFIG = {
   width: 640,
   height: 480,
   debug: true,
-};
-
-const levelState = {
-  lastTick: undefined,
-  delta: 0,
 };
 
 const init = () => {
@@ -60,6 +56,16 @@ const init = () => {
         );
         tiles.push(tile);
         gameObjects.push(tile);
+      }
+    }
+  }
+
+  collisionMap = levelLayout;
+
+  for (let i = 0; i < levelLayout.length; i++) {
+    for (let j = 0; j < 8; j++) {
+      if (levelLayout[i][j] !== 0) {
+        collisionMap[i][j] = 1;
       }
     }
   }

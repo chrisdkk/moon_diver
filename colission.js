@@ -68,16 +68,19 @@ function tileCollision(entity, tile, cDir) {
       entity.x = tile.x + tile.width;
       break;
     case "top":
-      entity.state.velocity = 5;
-      entity.y = tile.y + entity.height;
+      entity.state.velocity = 1;
+      entity.y = entity.y;
       break;
     case "bottom":
       entity.state.movement.grounded = true;
       entity.y = tile.y - entity.height;
       break;
     case "top-right":
+
     case "top-left":
+
     case "bottom-right":
+
     case "bottom-left":
   }
 }
