@@ -1,7 +1,7 @@
 import GameObject from "./GameObject.js";
 
-class Enemy extends GameObject {
-  constructor(context, x, y, width, height, CONFIG) {
+class PlayerProjectile extends GameObject {
+  constructor(context, x, y, width, height, CONFIG, dir) {
     super(context, x, y, width, height, CONFIG);
   }
 

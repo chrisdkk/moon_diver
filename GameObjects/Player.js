@@ -4,33 +4,32 @@ class Player extends GameObject {
   constructor(context, x, y, width, height, CONFIG) {
     super(context, x, y, width, height, CONFIG);
     this.state = {
-      velocity: 0,
-      direction: 0,
-      dx: 0,
-      dy: 0,
+      velocity: 0, //Vertical Speed
+      dx: 0, //Horizontal Move Direction
+      dy: 1,
+      lastDx: 1,
       currentKeys: [],
-      movement: {
-        grounded: false,
-        right: undefined,
-        left: undefined,
-        up: undefined,
-        down: undefined,
-      },
+      isStanding: false,
+      wallRight: false,
+      wallLeft: false,
     };
 
     this.stats = {
-      speed: 1,
-      gravity: 10,
+      speed: 3, //Horizontal Speed
+      gravity: 3, //Gravitational Acceleration
     };
 
-    this.nextPosition;
-    this.nextvelocity;
+    this.nextPos = { x: null, y: null, width: this.width, height: this.height };
   }
 
   init() {
+    //--------------------------
+    //Check for Inputs
+    //--------------------------
+
+    //Keydown Event
     document.addEventListener("keydown", (event) => {
       this.state.currentKeys[event.code] = true;
-
       if (
         this.state.currentKeys["ArrowRight"] ||
         this.state.currentKeys["ArrowLeft"] ||
@@ -39,163 +38,192 @@ class Player extends GameObject {
         event.preventDefault();
       }
     });
+    //Keyup Event
     document.addEventListener("keyup", (event) => {
       this.state.currentKeys[event.code] = false;
+    });
+
+    //--------------------------
+    //Set Player Spritesheets
+    //--------------------------
+
+    const framesize = {
+      frameSize: {
+        width: 48,
+        height: 48,
+      },
+    };
+
+    this.sprites = {
+      idle: {
+        src: "./assets/player/idle.png",
+        frames: 4,
+        fps: 4,
+        ...framesize,
+        image: null,
+      },
+      run: {
+        src: "./assets/player/run.png",
+        frames: 4,
+        fps: 10,
+        ...framesize,
+        image: null,
+      },
+      jump: {
+        src: "./assets/player/jump.png",
+        frames: 3,
+        fps: 10,
+        ...framesize,
+        image: null,
+      },
+      fall: {
+        src: "./assets/player/fall.png",
+        frames: 1,
+        fps: 10,
+        ...framesize,
+        image: null,
+      },
+    };
+
+    Object.values(this.sprites).forEach((sprite) => {
+      sprite.image = new Image();
+      sprite.image.src = sprite.src;
     });
   }
 
   update(deltaTime) {
+    //--------------------------
+    //Handle Input
+    //--------------------------
+
+    //Move Right/Left
     if (this.state.currentKeys["ArrowRight"]) {
-      //move on x-axis
-      this.state.direction = 1;
+      this.state.dx = 1;
     } else if (this.state.currentKeys["ArrowLeft"]) {
-      this.state.direction = -1;
+      this.state.dx = -1;
     } else {
-      this.state.direction = 0;
+      this.state.dx = 0;
     }
 
-    if (this.state.currentKeys["Space"] && this.state.velocity === 0) {
-      this.state.velocity = -50;
-      this.state.movement.grounded = false;
+    //check last horizontal movement direction
+    if (this.state.dx !== 0) this.state.lastDx = this.state.dx;
+
+    //Jump
+    if (this.state.currentKeys["Space"] && this.state.dy === 0) {
+      this.state.velocity = -28;
+      this.state.dy = -1;
     }
 
-    this.x += this.stats.speed * deltaTime * this.state.direction;
+    //--------------------------
+    //Physics Calculation
+    //--------------------------
 
-    if (this.state.movement.grounded === false) {
-      // Gravitation with Euler BW Algorithm
+    this.nextPos.x = this.x;
+    this.nextPos.y = this.y;
+
+    //X-Axis
+    this.nextPos.x += this.stats.speed * this.state.dx;
+
+    //Y-Axis
+    // Gravitation with Euler BW Algorithm
+    if (this.state.dy !== 0) {
       this.state.velocity += (this.stats.gravity * deltaTime) / 50;
-      this.y += (this.state.velocity * deltaTime) / 50;
-    } else this.state.velocity = 0;
+      this.nextPos.y += (this.state.velocity * deltaTime) / 50;
 
-    if (this.state.movement.grounded) {
-      this.nextVelocity = 0;
-    } else {
-      this.nextVelocity =
-        this.state.velocity + (this.stats.gravity * deltaTime) / 50;
+      if (this.state.velocity > 0) this.state.dy = 1;
+      else this.state.dy = -1;
     }
 
-    this.nextPos = {
-      x: this.x + this.stats.speed * deltaTime * this.state.direction,
-      y: this.y + (this.nextVelocity * deltaTime) / 50,
-    };
+    //--------------------------
+    //Set Sprite State
+    //--------------------------
+
+    this.spriteState =
+      this.state.dx === 0 && this.state.dy === 0
+        ? "idle"
+        : this.state.dx !== 0 && this.state.dy === 0
+        ? "run"
+        : this.state.dy === -1
+        ? "jump"
+        : "fall";
+
+    console.log(this.spriteState);
+
+    //--------------------------
+    //Set Boundaries
+    //--------------------------
+    //right
+    if (this.x + this.width / 2 > this.CONFIG.width) {
+      this.x = this.CONFIG.width - this.width / 2;
+    }
+    //left
+    else if (this.x - this.width / 2 < 0) this.x = 0 + this.width / 2;
+
+    //bottom
+    if (this.y + this.height / 2 > this.CONFIG.height)
+      this.y = this.CONFIG.height - this.height / 2;
+    //top
+    else if (this.y - this.height / 2 < 0) this.y = 0 + this.height / 2;
   }
 
   render() {
     super.render();
 
-    this.context.fillStyle = "red";
+    //--------------------------
+    //Render Player
+    //--------------------------
 
-    this.context.fillRect(this.x, this.y, this.width, this.height);
+    //move canvas origin to x
+    if (this.state.lastDx === 1) {
+      this.context.translate(this.x, this.y);
+    } else {
+      this.context.translate(this.x + this.width, this.y);
+    }
+
+    this.context.scale(this.state.lastDx, 1); // Turn to current direction
+
+    let coords = this.getImageSpriteCoordinates(this.sprites[this.spriteState]);
+
+    //draw player image
+    this.context.drawImage(
+      this.sprites[this.spriteState].image, // the image
+      coords.sourceX, //source x
+      coords.sourceY, //source y
+      coords.sourceWidth, //source width
+      coords.sourceHeight, //source height
+      0, //destination x
+      0, //destination y
+      this.width, //destination width
+      this.height //destination height
+    );
+    //--------------------------
+    //--------------------------
 
     this.context.resetTransform();
   }
 
-  getBoundingBox() {
-    let bb = {
-      x: undefined,
-      y: undefined,
-      w: undefined,
-      h: undefined,
+  getImageSpriteCoordinates(sprite) {
+    const frameX = Math.floor(
+      ((performance.now() / 1000) * sprite.fps) % sprite.frames
+    );
+
+    const coords = {
+      sourceX: frameX * sprite.frameSize.width,
+      sourceY: 0,
+      sourceWidth: sprite.frameSize.width,
+      sourceHeight: sprite.frameSize.height,
     };
 
-    if (this.x !== this.nextPos.x && this.y !== this.nextPos.y) {
-      if (this.nextPos.x > this.x && this.nextPos.y > this.y) {
-        //next position to the TOP RIGHT
-        bb.x = this.x;
-        bb.y = this.nextPos.y;
-        bb.w = this.nextPos.x - this.x + this.width;
-        bb.h = this.y - this.nextPos.y + this.height;
+    return coords;
+  }
 
-        this.state.movement.up = 1;
-        this.state.movement.down = 0;
-        this.state.movement.left = 0;
-        this.state.movement.right = 1;
-      } else if (this.nextPos.x > this.x && this.nextPos.y < this.y) {
-        //next position to the BOTTOM RIGHT
-        bb.x = this.x;
-        bb.y = this.y;
-        bb.w = this.nextPos.x - this.x + this.width;
-        bb.h = this.nextPos.y - this.y + this.height;
-        this.state.movement.up = 0;
-        this.state.movement.down = 1;
-        this.state.movement.left = 0;
-        this.state.movement.right = 1;
-      } else if (this.nextPos.x < this.x && this.nextPos.y > this.y) {
-        //next position to the TOP LEFT
-        bb.x = this.nextPos.x;
-        bb.y = this.nextPos.y;
-        bb.w = this.x - this.nextPos.x + this.width;
-        bb.h = this.y - this.nextPos.y + this.height;
-        this.state.movement.up = 1;
-        this.state.movement.down = 0;
-        this.state.movement.left = 1;
-        this.state.movement.right = 0;
-      } else if (this.nextPos.x < this.x && this.nextPos.y < this.y) {
-        //next position to the BOTTOM LEFT
-        bb.x = this.nextPos.x;
-        bb.y = this.y;
-        bb.w = this.x - this.nextPos.x + this.width;
-        bb.h = this.nextPos.y - this.y + this.height;
-        this.state.movement.up = 0;
-        this.state.movement.down = 1;
-        this.state.movement.left = 1;
-        this.state.movement.right = 0;
-      }
-    } else if (this.x === this.nextPos.x && this.y !== this.nextPos.y) {
-      if (this.y < this.nextPos.y) {
-        //next position BELOW
-        bb.x = this.x;
-        bb.y = this.y;
-        bb.w = this.width;
-        bb.h = this.nextPos.y - this.y + this.height;
+  getBoundingBox() {
+    let bb = super.getBoundingBox();
 
-        this.state.movement.up = 0;
-        this.state.movement.down = 1;
-        this.state.movement.left = 0;
-        this.state.movement.right = 0;
-      } else {
-        //next position ABOVE
-        bb.x = this.x;
-        bb.y = this.nextPos.y;
-        bb.w = this.width;
-        bb.h = this.y - this.nextPos.y + this.height;
-        this.state.movement.up = 1;
-        this.state.movement.down = 0;
-        this.state.movement.left = 0;
-        this.state.movement.right = 0;
-      }
-    } else if (this.x !== this.nextPos.x && this.y === this.nextPos.y) {
-      if (this.x < this.nextPos.x) {
-        //next position RIGHT
-        bb.x = this.x;
-        bb.y = this.y;
-        bb.w = this.nextPos.x - this.x + this.width;
-        bb.h = this.height;
-        this.state.movement.up = 0;
-        this.state.movement.down = 0;
-        this.state.movement.left = 0;
-        this.state.movement.right = 1;
-      } else {
-        //next position LEFT
-        bb.x = this.nextPos.x;
-        bb.y = this.y;
-        bb.w = this.x - this.nextPos.x + this.width;
-        bb.h = this.height;
-        this.state.movement.up = 0;
-        this.state.movement.down = 0;
-        this.state.movement.left = 1;
-        this.state.movement.right = 0;
-      }
-    } else if (this.x === this.nextPos.x && this.y === this.nextPos.y) {
-      bb.x = this.x;
-      bb.y = this.y;
-      bb.w = this.width;
-      bb.h = this.height;
-      this.state.movement.up = 0;
-      this.state.movement.down = 0;
-      this.state.movement.left = 0;
-      this.state.movement.right = 0;
-    }
+    bb.x = bb.x;
+    bb.y = bb.y;
+    bb.w = bb.w;
+    bb.h = bb.h;
     return bb;
   }
 }

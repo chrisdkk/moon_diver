@@ -13,6 +13,8 @@ let Line = {
   },
 };
 
+let ob = {};
+let obVertices = [];
 let o1, o2, o3, o4;
 
 function setPlayerVertices(p1, p2) {
@@ -93,12 +95,6 @@ function setPlayerVertices(p1, p2) {
     Line.line1.end = nextVertice.upLeft;
     Line.line2.end = nextVertice.upRight;
     Line.line3.end = nextVertice.downLeft;
-    s1 = tl1;
-    s2 = tr1;
-    s3 = bl1;
-    e1 = tl2;
-    e2 = tr2;
-    e3 = bl2;
     o1 = 1;
     o2 = 2;
     o3 = 2;
@@ -107,7 +103,6 @@ function setPlayerVertices(p1, p2) {
 }
 
 function hasCollided(o) {
-  //
   let i1 = line2lineIntersection(
     Line.line1.start,
     Line.line1.end,
@@ -182,10 +177,11 @@ function hasCollided(o) {
 }
 
 function track(s, e, i) {
-  dot(s);
-  dot(i);
-  line(s, i);
-  line(i, e);
+  //drawing intersection lines
+  // dot(s);
+  // dot(i);
+  // line(s, i);
+  // line(i, e);
   return { dx: i.x - s.x, dy: i.y - s.y, s: s, i: i };
 }
 
