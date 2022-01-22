@@ -4,7 +4,7 @@ class Tile extends GameObject {
   constructor(context, x, y, width, height, CONFIG, tileNum) {
     super(context, x, y, width, height, CONFIG);
     this.tileNum = tileNum;
-    this.tilesize = 80;
+    this.tilesize = 48;
     this.columns = 4;
 
     this.sx = (this.tileNum % this.columns) * this.tilesize;
