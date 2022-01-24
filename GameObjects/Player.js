@@ -2,8 +2,8 @@ import GameObject from "./GameObject.js";
 import PlayerProjectile from "./Projectiles.js";
 
 class Player extends GameObject {
-  constructor(context, x, y, width, height, CONFIG) {
-    super(context, x, y, width, height, CONFIG);
+  constructor(context, x, y, width, height, CONFIG, camera) {
+    super(context, x, y, width, height, CONFIG, camera);
     this.state = {
       velocity: 0, //Vertical Speed
       dx: 0, //Horizontal Move Direction
@@ -13,15 +13,20 @@ class Player extends GameObject {
     };
 
     this.stats = {
-      speed: 5, //Horizontal Speed
-      gravity: 7, //Gravitational Acceleration
+      speed: 7, //Horizontal Speed
+      gravity: 8, //Gravitational Acceleration
     };
 
     this.rateOfFire = 5;
     this.shootCoolDown = 0;
     this.shoot = false;
 
-    this.nextPos = { x: null, y: null, width: this.width, height: this.height };
+    this.dY = 0;
+    this.dX = 0;
+    this.colX;
+    this.colY;
+
+    // this.jump;
   }
 
   init() {
@@ -95,7 +100,6 @@ class Player extends GameObject {
   }
 
   update(deltaTime) {
-    console.log(this.state.currentKeys);
     //--------------------------
     //Handle Input
     //--------------------------
@@ -113,64 +117,45 @@ class Player extends GameObject {
     if (this.state.dx !== 0) this.state.lastDx = this.state.dx;
 
     //Jump
-    if (this.state.currentKeys["Space"] && this.state.dy === 0) {
+    if (this.state.currentKeys["Space"] && !this.jump) {
       this.state.velocity = -40;
-      this.state.dy = -1;
+      this.jump = true;
     }
 
     //Shoot Projectiles
-    setInterval(this.timeCycle, 50);
+    // setInterval(this.timeCycle, 50);
 
     //--------------------------
     //Physics Calculation
     //--------------------------
 
-    this.nextPos.x = this.x;
-    this.nextPos.y = this.y;
+    this.dX = 0;
+    this.dY = 0;
 
     //X-Axis
-    this.nextPos.x += this.stats.speed * this.state.dx;
+    this.dX += this.stats.speed * this.state.dx;
 
     //Y-Axis
     // Gravitation with Euler BW Algorithm
-    if (this.state.dy !== 0) {
+    if (this.state.velocity < 30) {
       this.state.velocity += (this.stats.gravity * deltaTime) / 50;
-      this.nextPos.y += (this.state.velocity * deltaTime) / 50;
-
-      if (this.state.velocity > 0) this.state.dy = 1;
-      else this.state.dy = -1;
+    } else {
+      this.state.velocity = 30;
     }
+    this.dY += (this.state.velocity * deltaTime) / 50;
 
     //--------------------------
     //Set Sprite State
     //--------------------------
 
     this.spriteState =
-      this.state.dx === 0 && this.state.dy === 0
+      this.state.dx === 0 && !this.jump
         ? "idle"
-        : this.state.dx !== 0 && this.state.dy === 0
+        : this.state.dx !== 0 && !this.jump
         ? "run"
-        : this.state.dy === -1
+        : this.jump
         ? "jump"
         : "fall";
-
-    console.log(this.spriteState);
-
-    //--------------------------
-    //Set Boundaries
-    //--------------------------
-    //right
-    if (this.x + this.width / 2 > this.CONFIG.width) {
-      this.colX = this.CONFIG.width - this.width / 2;
-    }
-    //left
-    else if (this.x - this.width / 2 < 0) this.x = 0 + this.width / 2;
-
-    //bottom
-    if (this.y + this.height / 2 > this.CONFIG.height)
-      this.colY = this.CONFIG.height - this.height / 2;
-    //top
-    else if (this.y - this.height / 2 < 0) this.y = 0 + this.height / 2;
   }
 
   render() {
@@ -210,7 +195,6 @@ class Player extends GameObject {
   }
 
   getImageSpriteCoordinates(sprite) {
-    console.log(sprite);
     const frameX = Math.floor(
       ((performance.now() / 1000) * sprite.fps) % sprite.frames
     );

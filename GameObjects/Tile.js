@@ -1,8 +1,8 @@
 import GameObject from "./GameObject.js";
 
 class Tile extends GameObject {
-  constructor(context, x, y, width, height, CONFIG, tileNum) {
-    super(context, x, y, width, height, CONFIG);
+  constructor(context, x, y, width, height, CONFIG, camera, tileNum) {
+    super(context, x, y, width, height, CONFIG, camera);
     this.tileNum = tileNum;
     this.tilesize = width;
     this.columns = 4; // Tilemap columns

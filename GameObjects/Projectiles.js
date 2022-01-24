@@ -1,8 +1,8 @@
 import GameObject from "./GameObject.js";
 
 class PlayerProjectile extends GameObject {
-  constructor(context, x, y, width, height, CONFIG, dir) {
-    super(context, x, y, width, height, CONFIG);
+  constructor(context, x, y, width, height, CONFIG, camera, dir) {
+    super(context, x, y, width, height, CONFIG, camera);
     this.dir = dir;
     this.speed = 10;
   }

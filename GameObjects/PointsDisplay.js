@@ -1,8 +1,8 @@
 import GameObject from "./GameObject.js";
 
 class PointsDisplay extends GameObject {
-  constructor(context, x, y) {
-    super(context, x, y);
+  constructor(context, x, y, camera) {
+    super(context, x, y, camera);
 
     this.points = 0;
   }

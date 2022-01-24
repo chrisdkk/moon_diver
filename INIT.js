@@ -9,11 +9,14 @@ let player;
 let pointUI;
 let gameObjects = [];
 let tiles = [];
-let colliders = [];
 let collectibles = [];
-let interval = true;
 
 const hud = {};
+
+const camera = {
+  x: 0,
+  y: 0,
+};
 
 const world = {
   tilesize: 80,
@@ -25,18 +28,8 @@ const world = {
       [7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       [7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       [7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [21, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
-    ],
-    colliders: [
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [2, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0],
-      [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+      [7, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0],
+      [21, 2, 2, 2, 2, 2, 2, 2, 2, 22, 2, 2, 2, 2, 2, 2, 2, 2],
     ],
     columns: 18,
   },
@@ -67,10 +60,11 @@ const init = () => {
   player = new Player(
     context,
     world.tilesize * 3,
-    world.tilesize * 6 - 1,
+    world.tilesize * 6,
     world.tilesize,
     world.tilesize,
-    CONFIG
+    CONFIG,
+    camera
   );
   gameObjects.push(player);
 
@@ -80,7 +74,8 @@ const init = () => {
     world.tilesize * 6,
     world.tilesize,
     world.tilesize,
-    CONFIG
+    CONFIG,
+    camera
   );
   collectibles.push(collectible);
   gameObjects.push(collectible);
@@ -122,45 +117,53 @@ const update = (deltaTime) => {
       world.tilesize,
       world.tilesize,
       CONFIG,
+      camera,
       player.state.lastDx
     );
     gameObjects.push(projectile);
   }
 
-  let cPos = {
-    x: player.nextPos.x,
-    y: player.nextPos.y,
-    dx: 10000,
-    dy: 10000,
-  };
+  //Level bounds collision
+  player.colDX = 0;
+  player.colDY = 0;
+  collisionTop(CONFIG.height, 0, CONFIG.width, 100);
+  collisionBottom(0, 0, CONFIG.width, 100);
+  collisionLeft(CONFIG.width, 0, CONFIG.height, 100);
+  collisionRight(0, 0, CONFIG.height, 100);
 
-  console.log(tiles);
+  // Box collisions
   tiles.forEach((tile) => {
-    setPlayerVertices(player, player.nextPos);
-    ob = { x: tile.x, y: tile.y, w: tile.width, h: tile.height };
-    obVertices = [
-      { x: ob.x, y: ob.y },
-      { x: ob.x + ob.w, y: ob.y },
-      { x: ob.x + ob.w, y: ob.y + ob.h },
-      { x: ob.x, y: ob.y + ob.h },
-    ];
-    let c = hasCollided(obVertices);
-    // console.log(newPos);
-    if (typeof c.dx === "number") {
-      if (pythagoras(c.dx, c.dy) < pythagoras(cPos.dx, cPos.dy)) {
-        cPos.dx = c.dx;
-        cPos.dy = c.dy;
-
-        cPos.x = player.x + cPos.dx;
-        cPos.y = player.y + cPos.dy;
-      }
-    }
+    collisionTop(
+      tile.y - tile.height / 2,
+      tile.x - tile.width / 2,
+      tile.x + tile.width / 2,
+      10
+    );
+    collisionBottom(
+      tile.y + tile.height / 2,
+      tile.x - tile.width / 2,
+      tile.x + tile.width / 2,
+      10
+    );
+    collisionLeft(
+      tile.x - tile.width / 2,
+      tile.y - tile.height / 2,
+      tile.y + tile.height / 2,
+      10
+    );
+    collisionRight(
+      tile.x + tile.width / 2,
+      tile.y - tile.height / 2,
+      tile.y + tile.height / 2,
+      10
+    );
   });
-  if (cPos.dx !== 10000) {
-    letCollide(cPos);
-  }
-  player.x = cPos.x;
-  player.y = cPos.y;
+
+  // Move the player
+  player.x += player.dX;
+  player.y += player.dY;
+  player.x += player.colDX;
+  player.y += player.colDY;
 
   //check for collision between collectibles and player
   let removeItems = [];
@@ -200,43 +203,17 @@ function loadLevel(level, tilesize) {
       if (level.map[i][j] !== 0) {
         let tile = new Tile(
           context,
-          j * tilesize,
+          j * tilesize - camera.x,
           i * tilesize,
           tilesize,
           tilesize,
           CONFIG,
+          camera,
           level.map[i][j] - 1
         );
         tiles.push(tile);
         gameObjects.push(tile);
       }
-    }
-  }
-}
-
-function letCollide(collisionData) {
-  let dx = collisionData.dx;
-  let dy = collisionData.dy;
-  let k = dy / dx;
-  if (player.state.dx === 0 || Math.abs(k * dy) > Math.abs(dx)) {
-    if (dy < 0) {
-      player.state.velocity = 1;
-      collisionData.y += 0.05;
-      console.log("up");
-    } else if (dy > 0) {
-      player.state.dy = 0;
-      collisionData.y -= 0.05;
-      console.log("down");
-    }
-  } else if (player.state.dy === 0 || Math.abs(k * dy) < Math.abs(dx)) {
-    if (dx > 0) {
-      collisionData.x -= 1;
-      console.log("right");
-    } else if (dx < 0) {
-      collisionData.x += 1;
-      console.log("left");
-    } else {
-      console.log("dunno");
     }
   }
 }
@@ -266,3 +243,81 @@ window.addEventListener("load", () => {
   canvas.setAttribute("height", CONFIG.height);
   init();
 });
+
+/// COLLISION FUNCTIONS
+function collisionTop(y, xMin, xMax, boxHeight) {
+  if (
+    player.x - player.width / 2 < xMax &&
+    player.x + player.width / 2 > xMin
+  ) {
+    if (
+      player.y + player.dY > y - player.height / 2 &&
+      player.y + player.dY < y + boxHeight - player.height / 2
+    ) {
+      if (player.dY > 1) {
+        player.dY = 0;
+        player.state.velocity = 0;
+        player.jump = false;
+      } else {
+        player.dY = 0;
+        player.state.velocity = 0;
+        player.jump = false;
+      }
+      if (player.y + player.dY > y - player.height / 2) {
+        player.colDY = player.y + player.dY - y - player.height / 2;
+      }
+    }
+  }
+}
+
+function collisionBottom(y, xMin, xMax, boxHeight) {
+  if (
+    player.x - player.width / 2 < xMax &&
+    player.x + player.width / 2 > xMin
+  ) {
+    if (
+      player.y + player.dY < y + player.height / 2 &&
+      player.y + player.dY > y - boxHeight - player.height / 2
+    ) {
+      player.dY = 0;
+      player.state.velocity = 1;
+      if (player.y + player.dY < y + player.height / 2) {
+        player.colDY = player.y + player.dY - y + player.height / 2;
+      }
+    }
+  }
+}
+
+function collisionLeft(x, yMin, yMax, boxWidth) {
+  if (
+    player.y - player.height / 2 < yMax &&
+    player.y + player.height / 2 > yMin
+  ) {
+    if (
+      player.x + player.dX > x - player.width / 2 &&
+      player.x + player.dX < x - player.width / 2 + boxWidth
+    ) {
+      player.dX = 0;
+      if (player.x + player.dX > x - player.width / 2) {
+        player.colDX = player.x + player.dX - x - player.width / 2;
+      }
+    }
+  }
+}
+
+function collisionRight(x, yMin, yMax, boxWidth) {
+  if (
+    player.y - player.height / 2 < yMax &&
+    player.y + player.height / 2 > yMin
+  ) {
+    if (
+      player.x + player.dX < x + player.width / 2 &&
+      player.x - player.dX > x + player.width / 2 - boxWidth
+    ) {
+      player.dX = 0;
+      if (player.x + player.dX < x + player.width / 2) {
+        player.colDX = player.x + player.dX - x + player.width / 2;
+      }
+    }
+  }
+}

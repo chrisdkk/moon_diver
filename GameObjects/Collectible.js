@@ -1,8 +1,8 @@
 import GameObject from "./GameObject.js";
 
 class Collectible extends GameObject {
-  constructor(context, x, y, width, height, CONFIG) {
-    super(context, x, y, width, height, CONFIG);
+  constructor(context, x, y, width, height, CONFIG, camera) {
+    super(context, x, y, width, height, CONFIG, camera);
   }
 
   init() {

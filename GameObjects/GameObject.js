@@ -1,11 +1,12 @@
 class GameObject {
-  constructor(context, x, y, width, height, CONFIG) {
+  constructor(context, x, y, width, height, CONFIG, camera) {
     this.context = context;
     this.x = x;
     this.y = y;
     this.width = width;
     this.height = height;
     this.CONFIG = CONFIG;
+    this.camera = camera;
 
     //Every game object
     this.init();
