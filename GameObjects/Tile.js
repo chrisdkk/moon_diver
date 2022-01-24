@@ -4,8 +4,8 @@ class Tile extends GameObject {
   constructor(context, x, y, width, height, CONFIG, tileNum) {
     super(context, x, y, width, height, CONFIG);
     this.tileNum = tileNum;
-    this.tilesize = 48;
-    this.columns = 4;
+    this.tilesize = width;
+    this.columns = 4; // Tilemap columns
 
     this.sx = (this.tileNum % this.columns) * this.tilesize;
     this.sy = Math.floor(this.tileNum / this.columns) * this.tilesize;
@@ -17,7 +17,7 @@ class Tile extends GameObject {
   }
 
   render() {
-    super.render();
+    // super.render();
     this.context.drawImage(
       this.tileMap,
       this.sx,
@@ -29,10 +29,6 @@ class Tile extends GameObject {
       this.width,
       this.height
     );
-  }
-  getBoundingBox() {
-    let bb = super.getBoundingBox();
-    return bb;
   }
 }
 

@@ -12,7 +12,9 @@ div {
 }
 
 #canvas {
-    image-rendering: pixelated;
-    background-color: white;
+    image-rendering: optimizeSpeed;
+    image-rendering: crisp-edges;
+    background-image: url("./assets/Background.png");
+    background-size: cover;
 }
 

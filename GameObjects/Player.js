@@ -1,4 +1,5 @@
 import GameObject from "./GameObject.js";
+import PlayerProjectile from "./Projectiles.js";
 
 class Player extends GameObject {
   constructor(context, x, y, width, height, CONFIG) {
@@ -9,15 +10,16 @@ class Player extends GameObject {
       dy: 1,
       lastDx: 1,
       currentKeys: [],
-      isStanding: false,
-      wallRight: false,
-      wallLeft: false,
     };
 
     this.stats = {
-      speed: 3, //Horizontal Speed
-      gravity: 3, //Gravitational Acceleration
+      speed: 5, //Horizontal Speed
+      gravity: 7, //Gravitational Acceleration
     };
+
+    this.rateOfFire = 5;
+    this.shootCoolDown = 0;
+    this.shoot = false;
 
     this.nextPos = { x: null, y: null, width: this.width, height: this.height };
   }
@@ -33,7 +35,8 @@ class Player extends GameObject {
       if (
         this.state.currentKeys["ArrowRight"] ||
         this.state.currentKeys["ArrowLeft"] ||
-        this.state.currentKeys["Space"]
+        this.state.currentKeys["Space"] ||
+        this.state.currentKeys["KeyZ"]
       ) {
         event.preventDefault();
       }
@@ -72,14 +75,14 @@ class Player extends GameObject {
       jump: {
         src: "./assets/player/jump.png",
         frames: 3,
-        fps: 10,
+        fps: 3,
         ...framesize,
         image: null,
       },
       fall: {
         src: "./assets/player/fall.png",
         frames: 1,
-        fps: 10,
+        fps: 1,
         ...framesize,
         image: null,
       },
@@ -92,6 +95,7 @@ class Player extends GameObject {
   }
 
   update(deltaTime) {
+    console.log(this.state.currentKeys);
     //--------------------------
     //Handle Input
     //--------------------------
@@ -110,9 +114,12 @@ class Player extends GameObject {
 
     //Jump
     if (this.state.currentKeys["Space"] && this.state.dy === 0) {
-      this.state.velocity = -28;
+      this.state.velocity = -40;
       this.state.dy = -1;
     }
+
+    //Shoot Projectiles
+    setInterval(this.timeCycle, 50);
 
     //--------------------------
     //Physics Calculation
@@ -154,14 +161,14 @@ class Player extends GameObject {
     //--------------------------
     //right
     if (this.x + this.width / 2 > this.CONFIG.width) {
-      this.x = this.CONFIG.width - this.width / 2;
+      this.colX = this.CONFIG.width - this.width / 2;
     }
     //left
     else if (this.x - this.width / 2 < 0) this.x = 0 + this.width / 2;
 
     //bottom
     if (this.y + this.height / 2 > this.CONFIG.height)
-      this.y = this.CONFIG.height - this.height / 2;
+      this.colY = this.CONFIG.height - this.height / 2;
     //top
     else if (this.y - this.height / 2 < 0) this.y = 0 + this.height / 2;
   }
@@ -203,6 +210,7 @@ class Player extends GameObject {
   }
 
   getImageSpriteCoordinates(sprite) {
+    console.log(sprite);
     const frameX = Math.floor(
       ((performance.now() / 1000) * sprite.fps) % sprite.frames
     );
@@ -225,6 +233,20 @@ class Player extends GameObject {
     bb.w = bb.w;
     bb.h = bb.h;
     return bb;
+  }
+
+  timeCycle() {
+    if (this.state.currentKeys["KeyZ"]) {
+      if (shootCoolDown === 0) {
+        this.shootCoolDown = rateOfFire;
+        this.shoot = true;
+      } else {
+        this.shoot = false;
+      }
+    }
+    if (this.shootCoolDown > 0) {
+      this.shootCoolDown--;
+    }
   }
 }
 
