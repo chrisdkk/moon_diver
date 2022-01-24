@@ -22,16 +22,133 @@ const world = {
   tilesize: 80,
   level: {
     map: [
-      [6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6],
-      [6, 6, 6, 6, 6, 17, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10],
-      [17, 10, 10, 10, 10, 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [7, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0],
-      [21, 2, 2, 2, 2, 2, 2, 2, 2, 22, 2, 2, 2, 2, 2, 2, 2, 2],
+      [
+        6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 17,
+        10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 19, 6,
+        6, 6, 6, 6, 6,
+      ],
+      [
+        6, 6, 6, 6, 6, 6, 6, 6, 6, 17, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
+        10, 10, 10, 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 6, 6,
+        6, 6, 6, 6,
+      ],
+      [
+        6, 6, 6, 6, 6, 6, 6, 6, 6, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 6, 6, 6, 6, 6, 6,
+      ],
+      [
+        6,
+        6,
+        6,
+        6,
+        6,
+        17,
+        10,
+        10,
+        10,
+        11,
+        0,
+        "C",
+        0,
+        0,
+        0,
+        16,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        "C",
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        5,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+      ],
+      [
+        6, 6, 6, 6, 6, 7, 0, 0, 0, 0, 0, 13, 15, 0, 0, 0, 0, 0, 13, 15, 0, 0, 4,
+        0, 0, 0, 0, 0, 13, 14, 14, 15, 0, 0, 0, 0, 0, 0, 0, 0, 5, 6, 6, 6, 6, 6,
+        6,
+      ],
+      [
+        6, 6, 6, 6, 6, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16, 0, 0, 0, 0, 0, 8, 1,
+        3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 3, 0, 0, 1, 2, 23, 6, 6, 6, 6, 6, 6,
+      ],
+      [
+        6,
+        6,
+        6,
+        6,
+        6,
+        7,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        4,
+        0,
+        0,
+        13,
+        15,
+        0,
+        0,
+        "C",
+        8,
+        9,
+        11,
+        16,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        2,
+        2,
+        3,
+        0,
+        5,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+      ],
+      [
+        6, 6, 6, 6, 6, 21, 2, 2, 2, 2, 3, 0, 4, 0, 8, 0, 0, 0, 0, 0, 1, 2, 22,
+        2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 23, 6, 6, 6, 6, 6, 6, 6, 6,
+      ],
     ],
-    columns: 18,
+    columns: 47,
   },
 };
 
@@ -59,26 +176,15 @@ const init = () => {
 
   player = new Player(
     context,
-    world.tilesize * 3,
+    CONFIG.width / 2,
     world.tilesize * 6,
-    world.tilesize,
-    world.tilesize,
+    world.tilesize - 4,
+    world.tilesize - 4,
     CONFIG,
     camera
   );
   gameObjects.push(player);
 
-  let collectible = new Collectible(
-    context,
-    world.tilesize * 8,
-    world.tilesize * 6,
-    world.tilesize,
-    world.tilesize,
-    CONFIG,
-    camera
-  );
-  collectibles.push(collectible);
-  gameObjects.push(collectible);
   //--------------------------
   //Set up UI
   //--------------------------
@@ -159,6 +265,14 @@ const update = (deltaTime) => {
     );
   });
 
+  gameObjects.forEach((obj) => {
+    obj.x -= player.dX;
+  });
+
+  //Move Camera
+  camera.x += player.dX;
+  pointUI.x += player.dX;
+
   // Move the player
   player.x += player.dX;
   player.y += player.dY;
@@ -197,52 +311,44 @@ const render = () => {
 //Utilities
 //--------------------------
 
+//Load Level Map
 function loadLevel(level, tilesize) {
   for (let i = 0; i < level.map.length; i++) {
     for (let j = 0; j < level.columns; j++) {
-      if (level.map[i][j] !== 0) {
-        let tile = new Tile(
-          context,
-          j * tilesize - camera.x,
-          i * tilesize,
-          tilesize,
-          tilesize,
-          CONFIG,
-          camera,
-          level.map[i][j] - 1
-        );
-        tiles.push(tile);
-        gameObjects.push(tile);
+      switch (level.map[i][j]) {
+        case 0:
+          break;
+        case "C":
+          let collectible = new Collectible(
+            context,
+            j * tilesize,
+            i * tilesize,
+            world.tilesize,
+            world.tilesize,
+            CONFIG,
+            camera
+          );
+          collectibles.push(collectible);
+          gameObjects.push(collectible);
+          break;
+        default:
+          let tile = new Tile(
+            context,
+            j * tilesize,
+            i * tilesize,
+            tilesize,
+            tilesize,
+            CONFIG,
+            camera,
+            level.map[i][j] - 1
+          );
+          tiles.push(tile);
+          gameObjects.push(tile);
+          break;
       }
     }
   }
 }
-
-let checkCollisionBetween = (gameObjectA, gameObjectB) => {
-  let bbA = gameObjectA.getBoundingBox();
-  let bbB = gameObjectB.getBoundingBox();
-
-  if (
-    //go through criteria that exclude collision
-    bbA.x > bbB.x + bbB.w ||
-    bbA.x + bbA.w < bbB.x ||
-    bbA.y > bbB.y + bbB.h ||
-    bbA.y + bbA.h < bbB.y
-  ) {
-    return false;
-  } else return true;
-};
-
-let removeCollectible = (collectible) => {
-  collectibles.splice(collectibles.indexOf(collectible), 1);
-  gameObjects.splice(gameObjects.indexOf(collectible), 1);
-};
-
-window.addEventListener("load", () => {
-  canvas.setAttribute("width", CONFIG.width);
-  canvas.setAttribute("height", CONFIG.height);
-  init();
-});
 
 /// COLLISION FUNCTIONS
 function collisionTop(y, xMin, xMax, boxHeight) {
@@ -321,3 +427,31 @@ function collisionRight(x, yMin, yMax, boxWidth) {
     }
   }
 }
+
+//Simple check for AABB Overlap
+let checkCollisionBetween = (gameObjectA, gameObjectB) => {
+  let bbA = gameObjectA.getBoundingBox();
+  let bbB = gameObjectB.getBoundingBox();
+
+  if (
+    //go through criteria that exclude collision
+    bbA.x > bbB.x + bbB.w ||
+    bbA.x + bbA.w < bbB.x ||
+    bbA.y > bbB.y + bbB.h ||
+    bbA.y + bbA.h < bbB.y
+  ) {
+    return false;
+  } else return true;
+};
+
+let removeCollectible = (collectible) => {
+  collectibles.splice(collectibles.indexOf(collectible), 1);
+  gameObjects.splice(gameObjects.indexOf(collectible), 1);
+};
+
+//What happens when page is loaded
+window.addEventListener("load", () => {
+  canvas.setAttribute("width", CONFIG.width);
+  canvas.setAttribute("height", CONFIG.height);
+  init();
+});
