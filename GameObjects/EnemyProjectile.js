@@ -1,15 +1,15 @@
 import GameObject from "./GameObject.js";
 
-class PlayerProjectile extends GameObject {
-  constructor(context, x, y, width, height, CONFIG, camera, dir) {
-    super(context, x, y, width, height, CONFIG, camera);
+class EnemyProjectile extends GameObject {
+  constructor(context, x, y, width, height, CONFIG, dir) {
+    super(context, x, y, width, height, CONFIG);
     this.dir = dir;
     this.speed = 10;
   }
 
   init() {
     this.image = new Image();
-    this.image.src = "./assets/player_proj.png";
+    this.image.src = "./assets/enemy_proj.png";
   }
 
   update() {
@@ -49,4 +49,4 @@ class PlayerProjectile extends GameObject {
   }
 }
 
-export default PlayerProjectile;
+export default EnemyProjectile;

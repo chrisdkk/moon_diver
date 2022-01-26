@@ -1,13 +1,13 @@
 import GameObject from "./GameObject.js";
-import PlayerProjectile from "./Projectiles.js";
+import PlayerProjectile from "./PlayerProjectile.js";
+import { playerProjectiles, gameObjects } from "../main.js";
 
 class Player extends GameObject {
-  constructor(context, x, y, width, height, CONFIG, camera) {
-    super(context, x, y, width, height, CONFIG, camera);
+  constructor(context, x, y, width, height, CONFIG) {
+    super(context, x, y, width, height, CONFIG);
     this.state = {
       velocity: 0, //Vertical Speed
       dx: 0, //Horizontal Move Direction
-      dy: 1,
       lastDx: 1,
       currentKeys: [],
     };
@@ -17,9 +17,9 @@ class Player extends GameObject {
       gravity: 8, //Gravitational Acceleration
     };
 
-    this.rateOfFire = 5;
+    this.rateOfFire = 20;
     this.shootCoolDown = 0;
-    this.shoot = false;
+    this.shoot = true;
 
     this.dY = 0;
     this.dX = 0;
@@ -118,12 +118,29 @@ class Player extends GameObject {
 
     //Jump
     if (this.state.currentKeys["Space"] && !this.jump) {
-      this.state.velocity = -40;
+      this.state.velocity = -45;
       this.jump = true;
     }
 
     //Shoot Projectiles
-    // setInterval(this.timeCycle, 50);
+    if (this.state.currentKeys["KeyZ"] && this.shoot) {
+      let projectile = new PlayerProjectile(
+        context,
+        this.x,
+        this.y,
+        this.width,
+        this.height,
+        CONFIG,
+        this.state.lastDx
+      );
+      playerProjectiles.push(projectile);
+      gameObjects.push(projectile);
+      this.shoot = false;
+
+      setTimeout(() => {
+        this.shoot = true;
+      }, 500);
+    }
 
     //--------------------------
     //Physics Calculation
@@ -177,6 +194,7 @@ class Player extends GameObject {
     let coords = this.getImageSpriteCoordinates(this.sprites[this.spriteState]);
 
     //draw player image
+    context.imageSmoothingEnabled = false;
     this.context.drawImage(
       this.sprites[this.spriteState].image, // the image
       coords.sourceX, //source x
@@ -220,13 +238,11 @@ class Player extends GameObject {
   }
 
   timeCycle() {
-    if (this.state.currentKeys["KeyZ"]) {
-      if (shootCoolDown === 0) {
-        this.shootCoolDown = rateOfFire;
-        this.shoot = true;
-      } else {
-        this.shoot = false;
-      }
+    if (this.shootCoolDown === 0) {
+      this.shootCoolDown = this.rateOfFire;
+      this.shoot = true;
+    } else {
+      this.shoot = false;
     }
     if (this.shootCoolDown > 0) {
       this.shootCoolDown--;

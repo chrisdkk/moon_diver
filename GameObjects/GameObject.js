@@ -1,12 +1,11 @@
 class GameObject {
-  constructor(context, x, y, width, height, CONFIG, camera) {
+  constructor(context, x, y, width, height, CONFIG) {
     this.context = context;
     this.x = x;
     this.y = y;
     this.width = width;
     this.height = height;
     this.CONFIG = CONFIG;
-    this.camera = camera;
 
     //Every game object
     this.init();
@@ -19,6 +18,7 @@ class GameObject {
   render() {
     if (this.CONFIG.debug) {
       let bb = this.getBoundingBox();
+      this.context.strokeStyle = "red";
       this.context.translate(bb.x, bb.y);
       this.context.strokeRect(0, 0, bb.w, bb.h);
       this.context.resetTransform();

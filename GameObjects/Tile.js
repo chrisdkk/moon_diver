@@ -1,8 +1,8 @@
 import GameObject from "./GameObject.js";
 
 class Tile extends GameObject {
-  constructor(context, x, y, width, height, CONFIG, camera, tileNum) {
-    super(context, x, y, width, height, CONFIG, camera);
+  constructor(context, x, y, width, height, CONFIG, tileNum) {
+    super(context, x, y, width, height, CONFIG);
     this.tileNum = tileNum;
     this.tilesize = width;
     this.columns = 4; // Tilemap columns
@@ -17,7 +17,7 @@ class Tile extends GameObject {
   }
 
   render() {
-    // super.render();
+    super.render();
     this.context.drawImage(
       this.tileMap,
       this.sx,
@@ -29,6 +29,11 @@ class Tile extends GameObject {
       this.width,
       this.height
     );
+  }
+
+  getBoundingBox() {
+    let bb = super.getBoundingBox();
+    return bb;
   }
 }
 

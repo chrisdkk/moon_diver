@@ -2,7 +2,14 @@ body {
     background-color: #1a1e22;
 }
 
-div {
+@font-face {
+    font-family: 'pixeloid';
+    src: url('./assets/font/PixeloidSans.ttf') format('truetype');
+    font-weight: normal;
+  font-style: normal;
+}
+
+#game-wrapper {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -11,10 +18,54 @@ div {
     gap: 12px;
 }
 
-#canvas {
-    image-rendering: optimizeSpeed;
-    image-rendering: crisp-edges;
-    background-image: url("./assets/Background.png");
+#start-screen {
+    background-image: url("./assets/Start_screen.png");
     background-size: cover;
+    text-align: center;
+    border-radius: 6px;
+
 }
 
+#start-game {
+    position: relative;
+    cursor: pointer;
+    top: 68%;
+    width: 35%;
+    height: 11%;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+    background-image: url("./assets/start-button.png");
+    background-size: cover;
+    background-color: transparent;
+    border: none
+}
+
+#start-game:hover {
+filter: brightness(80%);
+}
+
+#canvas {
+    display: none;
+    background-image: url("./assets/Background.png");
+    background-size: contain;
+    border-radius: 6px;
+
+}
+
+#end-screen {
+    display: none;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+    background-image: url("./assets/end_screen.png");
+    background-size: cover;
+    text-align: center;
+    border-radius: 6px;
+}
+
+#score {
+    position: relative;
+    top: 60%;
+    font-family: 'pixeloid';
+    font-size: 60px;
+    color: white;
+}

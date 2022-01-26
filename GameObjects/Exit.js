@@ -1,13 +1,13 @@
 import GameObject from "./GameObject.js";
 
-class Collectible extends GameObject {
+class Exit extends GameObject {
   constructor(context, x, y, width, height, CONFIG) {
     super(context, x, y, width, height, CONFIG);
   }
 
   init() {
     this.img = new Image();
-    this.img.src = "./assets/gem.png";
+    this.img.src = "./assets/exit.png";
   }
 
   update() {}
@@ -26,12 +26,8 @@ class Collectible extends GameObject {
 
   getBoundingBox() {
     let bb = super.getBoundingBox();
-    bb.x = bb.x + bb.w / 4;
-    bb.y = bb.y + bb.h / 4;
-    bb.w = bb.w / 2;
-    bb.h = bb.h / 2;
     return bb;
   }
 }
 
-export default Collectible;
+export default Exit;

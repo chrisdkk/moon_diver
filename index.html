@@ -8,13 +8,18 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <div>
+    <div id="game-wrapper">
+      <div id="start-screen">
+        <button id="start-game"></button>
+      </div>
       <canvas id="canvas" width="320px" height="256px"></canvas>
+      <div id="end-screen">
+        <p id="score">asas</p>
+      </div>
     </div>
 
-    <script src="context.js"></script>
-    <script src="math.js"></script>
+    <script src="globals.js"></script>
     <script src="collisions.js"></script>
-    <script src="INIT.js" type="module"></script>
+    <script src="main.js" type="module"></script>
   </body>
 </html>

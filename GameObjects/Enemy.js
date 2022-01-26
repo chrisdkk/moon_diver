@@ -1,29 +1,58 @@
 import GameObject from "./GameObject.js";
 
 class Enemy extends GameObject {
-  constructor(context, x, y, width, height, CONFIG, camera) {
-    super(context, x, y, width, height, CONFIG, camera);
+  constructor(context, x, y, width, height, CONFIG) {
+    super(context, x, y, width, height, CONFIG);
+
+    this.shoot = false;
+    this.dir = -1;
+
+    this.rateOfFire = 40;
+    this.shootCoolDown = 0;
+    this.shoot = false;
   }
 
-  init() {}
+  init() {
+    this.img = new Image();
+    this.img.src = "./assets/Enemy.png";
+  }
 
-  update() {}
+  update() {
+    setInterval(this.timeCycle(), 50);
+  }
 
   render() {
-    if (this.CONFIG.debug) {
-      let bb = this.getBoundingBox();
-      this.context.translate(bb.x, bb.y);
-      this.context.strokeRect(0, 0, bb.w, bb.h);
-      this.context.resetTransform();
-    }
+    super.render();
+
+    //move canvas origin to x
+    this.context.translate(this.x, this.y);
+
+    //draw collectible
+    this.context.drawImage(this.img, 0, 0, this.width, this.height);
+
+    this.context.resetTransform();
   }
 
   getBoundingBox() {
-    return {
-      x: this.x,
-      y: this.y,
-      w: this.width,
-      h: this.height,
-    };
+    let bb = super.getBoundingBox();
+    bb.x = bb.x + bb.w / 4;
+    bb.y = bb.y + bb.h / 4;
+    bb.w = bb.w / 2;
+    bb.h = bb.h / 2;
+    return bb;
+  }
+
+  timeCycle() {
+    if (this.shootCoolDown === 0) {
+      this.shootCoolDown = this.rateOfFire;
+      this.shoot = true;
+    } else {
+      this.shoot = false;
+    }
+    if (this.shootCoolDown > 0) {
+      this.shootCoolDown--;
+    }
   }
 }
+
+export default Enemy;
