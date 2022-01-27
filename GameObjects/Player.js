@@ -13,6 +13,7 @@ class Player extends GameObject {
     };
 
     this.stats = {
+      jetFuel: 100,
       speed: 5, //Horizontal Speed
       gravity: 8, //Gravitational Acceleration
     };
@@ -111,11 +112,18 @@ class Player extends GameObject {
     if (this.state.dx !== 0) this.state.lastDx = this.state.dx;
 
     //Jump
-    if (this.state.currentKeys["Space"] && !this.jump) {
-      this.state.velocity = -55;
+    if (this.state.currentKeys["Space"] && this.stats.jetFuel > 2) {
       this.jump = true;
+      this.state.velocity = -15;
+      this.stats.jetFuel -= 2;
 
       new Audio("../assets/audio/jump.wav").play();
+    } else if (
+      !this.state.currentKeys["Space"] &&
+      this.stats.jetFuel < 100 &&
+      !this.jump
+    ) {
+      this.stats.jetFuel += 10;
     }
 
     //Shoot Projectiles
@@ -177,13 +185,34 @@ class Player extends GameObject {
     super.render();
 
     //--------------------------
+    //Render JetFuel Bar
+    //--------------------------
+
+    context.beginPath();
+    context.lineWidth = 10;
+    if (this.stats.jetFuel > 2) {
+      context.strokeStyle = "#8b93af";
+      context.arc(this.x, this.y, 12, 0, 2 * Math.PI);
+      context.stroke();
+      context.beginPath();
+      context.strokeStyle = "#9cdb43";
+      context.arc(
+        this.x,
+        this.y,
+        12,
+        0,
+        (2 * Math.PI * this.stats.jetFuel) / 100
+      );
+      context.stroke();
+    } else {
+      context.strokeStyle = "#b53c44";
+      context.arc(this.x, this.y, 12, 0, 2 * Math.PI);
+      context.stroke();
+    }
+
+    //--------------------------
     //Render Player
     //--------------------------
-    context.beginPath();
-    context.strokeStyle = "rebeccapurple";
-    context.lineWidth = 15;
-    context.arc(this.x, this.y, 20, 0, 2 * Math.PI);
-    context.stroke();
 
     //move canvas origin to x
     if (this.state.lastDx === 1) {

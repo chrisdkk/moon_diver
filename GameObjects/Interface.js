@@ -19,7 +19,14 @@ class Interface extends GameObject {
     this.context.fillRect(this.x, this.y, 140, 30);
     this.context.fillRect(this.x, this.y + 30, 110, 50);
 
-    this.context.fillStyle = "red";
+    //draw empty health rectangles beneath
+    this.context.fillStyle = "#8b93af";
+
+    for (let i = 0; i < 3; i++) {
+      this.context.fillRect(this.x + 5 + i * 45, this.y + 5, 40, 20);
+    }
+
+    this.context.fillStyle = "#b4202a";
     for (let i = 0; i < this.health; i++) {
       this.context.fillRect(this.x + 5 + i * 45, this.y + 5, 40, 20);
     }
