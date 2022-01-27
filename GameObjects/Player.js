@@ -118,15 +118,17 @@ class Player extends GameObject {
 
     //Jump
     if (this.state.currentKeys["Space"] && !this.jump) {
-      this.state.velocity = -45;
+      this.state.velocity = -55;
       this.jump = true;
+
+      new Audio("../assets/audio/jump.wav").play();
     }
 
     //Shoot Projectiles
     if (this.state.currentKeys["KeyZ"] && this.shoot) {
       let projectile = new PlayerProjectile(
         context,
-        this.x,
+        this.x + 30 * this.state.lastDx,
         this.y,
         this.width,
         this.height,
@@ -136,6 +138,8 @@ class Player extends GameObject {
       playerProjectiles.push(projectile);
       gameObjects.push(projectile);
       this.shoot = false;
+
+      new Audio("../assets/audio/shoot.wav").play();
 
       setTimeout(() => {
         this.shoot = true;

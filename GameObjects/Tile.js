@@ -5,7 +5,7 @@ class Tile extends GameObject {
     super(context, x, y, width, height, CONFIG);
     this.tileNum = tileNum;
     this.tilesize = width;
-    this.columns = 4; // Tilemap columns
+    this.columns = 11; // Tilemap columns
 
     this.sx = (this.tileNum % this.columns) * this.tilesize;
     this.sy = Math.floor(this.tileNum / this.columns) * this.tilesize;

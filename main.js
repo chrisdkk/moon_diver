@@ -3,7 +3,6 @@ import Tile from "./GameObjects/Tile.js";
 import Collectible from "./GameObjects/Collectible.js";
 import Interface from "./GameObjects/Interface.js";
 import Enemy from "./GameObjects/Enemy.js";
-import PlayerProjectile from "./GameObjects/PlayerProjectile.js";
 import EnemyProjectile from "./GameObjects/EnemyProjectile.js";
 import Exit from "./GameObjects/Exit.js";
 import { world } from "./map.js";
@@ -13,6 +12,7 @@ let end;
 let gameUI;
 let reset = false;
 let win = false;
+let gameAudio = new Audio("./assets/audio/SR388.mp3");
 
 let gameObjects = [];
 let tiles = [];
@@ -47,6 +47,12 @@ function init() {
   //--------------------------
   gameUI = new Interface(context, 20, 20);
   gameObjects.push(gameUI);
+
+  //--------------------------
+  //Start Music
+  //--------------------------
+
+  gameAudio.play();
   //--------------------------
 
   levelState.lastTick = performance.now();
@@ -82,6 +88,8 @@ function update(deltaTime) {
   gameObjects.forEach((gameObject) => {
     gameObject.update(deltaTime);
   });
+
+  console.log(tiles);
 
   //Level bounds collision
   player.colDX = 0;
@@ -137,6 +145,8 @@ function update(deltaTime) {
       collectibles.splice(collectibles.indexOf(collectible), 1);
       gameObjects.splice(gameObjects.indexOf(collectible), 1);
       gameUI.increase();
+
+      new Audio("./assets/audio/pickup.wav").play();
     }
   });
 
@@ -289,6 +299,7 @@ function startScreen() {
 }
 
 function endScreen() {
+  gameAudio.pause();
   let outro = document.getElementById("end-screen");
   outro.style.width = `${CONFIG.width}px`;
   outro.style.height = `${CONFIG.height}px`;
@@ -297,7 +308,7 @@ function endScreen() {
   outro.style.display = "block";
 
   let score = document.getElementById("score");
-  score.innerHTML = `Collected: ${gameUI.points} / ${world.collectibles}`;
+  score.innerHTML = `Collected: ${gameUI.points} / ${world.level.collectibles}`;
 
   context.resetTransform();
   context.clearRect(0, 0, CONFIG.width, CONFIG.height);
