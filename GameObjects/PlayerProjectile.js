@@ -8,8 +8,17 @@ class PlayerProjectile extends GameObject {
   }
 
   init() {
-    this.image = new Image();
-    this.image.src = "./assets/player_proj.png";
+    this.sprite = {
+      frames: 4,
+      fps: 16,
+      frameSize: {
+        width: 80,
+        height: 80,
+      },
+      image: null,
+    };
+    this.sprite.image = new Image();
+    this.sprite.image.src = "./assets/player_proj.png";
   }
 
   update() {
@@ -28,8 +37,16 @@ class PlayerProjectile extends GameObject {
 
     this.context.scale(this.dir, 1);
 
+    let coords = this.getImageSpriteCoordinates(this.sprite);
+
+    //draw player image
+    context.imageSmoothingEnabled = false;
     this.context.drawImage(
-      this.image, // the image
+      this.sprite.image, // the image
+      coords.sourceX, //source x
+      coords.sourceY, //source y
+      coords.sourceWidth, //source width
+      coords.sourceHeight, //source height
       0, //destination x
       0, //destination y
       this.width, //destination width

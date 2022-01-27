@@ -13,20 +13,14 @@ class Player extends GameObject {
     };
 
     this.stats = {
-      speed: 7, //Horizontal Speed
+      speed: 5, //Horizontal Speed
       gravity: 8, //Gravitational Acceleration
     };
 
-    this.rateOfFire = 20;
-    this.shootCoolDown = 0;
     this.shoot = true;
 
     this.dY = 0;
     this.dX = 0;
-    this.colX;
-    this.colY;
-
-    // this.jump;
   }
 
   init() {
@@ -57,8 +51,8 @@ class Player extends GameObject {
 
     const framesize = {
       frameSize: {
-        width: 48,
-        height: 48,
+        width: 80,
+        height: 80,
       },
     };
 
@@ -73,14 +67,14 @@ class Player extends GameObject {
       run: {
         src: "./assets/player/run.png",
         frames: 4,
-        fps: 10,
+        fps: 8,
         ...framesize,
         image: null,
       },
       jump: {
         src: "./assets/player/jump.png",
-        frames: 3,
-        fps: 3,
+        frames: 6,
+        fps: 6,
         ...framesize,
         image: null,
       },
@@ -185,6 +179,11 @@ class Player extends GameObject {
     //--------------------------
     //Render Player
     //--------------------------
+    context.beginPath();
+    context.strokeStyle = "rebeccapurple";
+    context.lineWidth = 15;
+    context.arc(this.x, this.y, 20, 0, 2 * Math.PI);
+    context.stroke();
 
     //move canvas origin to x
     if (this.state.lastDx === 1) {
@@ -201,10 +200,10 @@ class Player extends GameObject {
     context.imageSmoothingEnabled = false;
     this.context.drawImage(
       this.sprites[this.spriteState].image, // the image
-      coords.sourceX, //source x
-      coords.sourceY, //source y
-      coords.sourceWidth, //source width
-      coords.sourceHeight, //source height
+      coords.sourceX + 10, //source x
+      coords.sourceY + 5, //source y
+      coords.sourceWidth - 20, //source width
+      coords.sourceHeight - 10, //source height
       0, //destination x
       0, //destination y
       this.width, //destination width
@@ -216,41 +215,14 @@ class Player extends GameObject {
     this.context.resetTransform();
   }
 
-  getImageSpriteCoordinates(sprite) {
-    const frameX = Math.floor(
-      ((performance.now() / 1000) * sprite.fps) % sprite.frames
-    );
-
-    const coords = {
-      sourceX: frameX * sprite.frameSize.width,
-      sourceY: 0,
-      sourceWidth: sprite.frameSize.width,
-      sourceHeight: sprite.frameSize.height,
-    };
-
-    return coords;
-  }
-
   getBoundingBox() {
     let bb = super.getBoundingBox();
 
-    bb.x = bb.x;
-    bb.y = bb.y;
-    bb.w = bb.w;
-    bb.h = bb.h;
+    bb.x = bb.x + this.width / 4;
+    bb.y = bb.y + this.height / 4;
+    bb.w = bb.w / 2;
+    bb.h = bb.h * 0.75;
     return bb;
-  }
-
-  timeCycle() {
-    if (this.shootCoolDown === 0) {
-      this.shootCoolDown = this.rateOfFire;
-      this.shoot = true;
-    } else {
-      this.shoot = false;
-    }
-    if (this.shootCoolDown > 0) {
-      this.shootCoolDown--;
-    }
   }
 }
 

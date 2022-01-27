@@ -4,7 +4,7 @@ const context = canvas.getContext("2d");
 const CONFIG = {
   width: 80 * 12,
   height: 80 * 8,
-  debug: 0,
+  debug: false,
 };
 
 const levelState = {

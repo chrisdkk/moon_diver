@@ -1,15 +1,14 @@
 import GameObject from "./GameObject.js";
+import EnemyProjectile from "./EnemyProjectile.js";
+import { player, enemyProjectiles, gameObjects } from "../main.js";
 
 class Enemy extends GameObject {
   constructor(context, x, y, width, height, CONFIG) {
     super(context, x, y, width, height, CONFIG);
 
-    this.shoot = false;
     this.dir = -1;
 
-    this.rateOfFire = 40;
-    this.shootCoolDown = 0;
-    this.shoot = false;
+    this.shoot = true;
   }
 
   init() {
@@ -18,7 +17,33 @@ class Enemy extends GameObject {
   }
 
   update() {
-    setInterval(this.timeCycle(), 50);
+    if (this.x < CONFIG.width && this.x > CONFIG.width / 2) {
+      if (
+        this.y < player.y &&
+        this.y + this.height > player.y + player.height
+      ) {
+        if (this.shoot) {
+          let projectile = new EnemyProjectile(
+            context,
+            this.x + 30 * this.dir,
+            this.y,
+            this.width,
+            this.height,
+            CONFIG,
+            this.dir
+          );
+          enemyProjectiles.push(projectile);
+          gameObjects.push(projectile);
+          this.shoot = false;
+
+          new Audio("../assets/audio/shoot.wav").play();
+
+          setTimeout(() => {
+            this.shoot = true;
+          }, 500);
+        }
+      }
+    }
   }
 
   render() {

@@ -91,10 +91,6 @@ function update(deltaTime) {
 
   console.log(tiles);
 
-  //Level bounds collision
-  player.colDX = 0;
-  player.colDY = 0;
-
   // Box collisions
   tiles.forEach((tile) => {
     collisionTop(
@@ -165,29 +161,6 @@ function update(deltaTime) {
     }
   });
 
-  enemies.forEach((enemy) => {
-    if (enemy.x < CONFIG.width && enemy.x > -enemy.width) {
-      if (
-        enemy.y < player.y &&
-        enemy.y + enemy.height > player.y + player.height
-      ) {
-        if (enemy.shoot) {
-          let projectile = new EnemyProjectile(
-            context,
-            enemy.x,
-            enemy.y,
-            world.tilesize,
-            world.tilesize,
-            CONFIG,
-            enemy.dir
-          );
-          enemyProjectiles.push(projectile);
-          gameObjects.push(projectile);
-        }
-      }
-    }
-  });
-
   if (player.y > CONFIG.height) {
     reset = true;
   }
@@ -239,8 +212,8 @@ function loadLevel(level, tilesize) {
             context,
             j * tilesize,
             i * tilesize,
-            2 * tilesize,
-            2 * tilesize,
+            tilesize,
+            tilesize,
             CONFIG
           );
           gameObjects.push(end);
@@ -345,4 +318,4 @@ function removeItem(itemArray, item) {
   gameObjects.splice(gameObjects.indexOf(item), 1);
 }
 
-export { gameObjects, playerProjectiles };
+export { player, gameObjects, playerProjectiles, enemyProjectiles };

@@ -25,6 +25,21 @@ class GameObject {
     }
   }
 
+  getImageSpriteCoordinates(sprite) {
+    const frameX = Math.floor(
+      ((performance.now() / 1000) * sprite.fps) % sprite.frames
+    );
+
+    const coords = {
+      sourceX: frameX * sprite.frameSize.width,
+      sourceY: 0,
+      sourceWidth: sprite.frameSize.width,
+      sourceHeight: sprite.frameSize.height,
+    };
+
+    return coords;
+  }
+
   getBoundingBox() {
     return {
       x: this.x,
