@@ -3,7 +3,6 @@ import Tile from "./GameObjects/Tile.js";
 import Collectible from "./GameObjects/Collectible.js";
 import Interface from "./GameObjects/Interface.js";
 import Enemy from "./GameObjects/Enemy.js";
-import EnemyProjectile from "./GameObjects/EnemyProjectile.js";
 import Exit from "./GameObjects/Exit.js";
 import { world } from "./map.js";
 
@@ -25,8 +24,8 @@ let enemies = [];
 //Initialize
 //--------------------------
 
-function init() {
-  loadLevel(world.level, world.tilesize);
+async function init() {
+  await loadLevel(world.level, world.tilesize);
 
   //--------------------------
   //Load Entities
@@ -59,16 +58,16 @@ function init() {
   gameLoop();
 }
 
-function gameLoop() {
+async function gameLoop() {
   //how much time has passed since last render
   levelState.deltaTime = performance.now() - levelState.lastTick;
 
-  update(levelState.deltaTime);
+  await update(levelState.deltaTime);
   render();
 
   if (reset) {
     reset = false;
-    resetGame();
+    await resetGame();
     return;
   }
 
@@ -84,12 +83,10 @@ function gameLoop() {
 //--------------------------
 //Update
 //--------------------------
-function update(deltaTime) {
+async function update(deltaTime) {
   gameObjects.forEach((gameObject) => {
     gameObject.update(deltaTime);
   });
-
-  console.log(tiles);
 
   // Box collisions
   tiles.forEach((tile) => {
@@ -201,7 +198,7 @@ const render = () => {
 //--------------------------
 
 //Load Level Map
-function loadLevel(level, tilesize) {
+async function loadLevel(level, tilesize) {
   for (let i = 0; i < level.map.length; i++) {
     for (let j = 0; j < level.columns; j++) {
       switch (level.map[i][j]) {
@@ -293,7 +290,7 @@ function endScreen() {
   enemies = [];
 }
 
-function resetGame() {
+async function resetGame() {
   context.resetTransform();
   context.clearRect(0, 0, CONFIG.width, CONFIG.height);
   gameObjects = [];
@@ -303,7 +300,7 @@ function resetGame() {
   enemyProjectiles = [];
   enemies = [];
 
-  init();
+  await init();
 }
 
 //What happens when page is loaded
@@ -313,7 +310,7 @@ window.addEventListener("load", () => {
   startScreen();
 });
 
-function removeItem(itemArray, item) {
+async function removeItem(itemArray, item) {
   itemArray.splice(itemArray.indexOf(item), 1);
   gameObjects.splice(gameObjects.indexOf(item), 1);
 }
