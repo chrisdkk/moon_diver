@@ -487,4 +487,3 @@ while (world.level.map.length > 0) {
   newMap.push(world.level.map.splice(0, world.level.columns));
 }
 world.level.map = newMap;
-console.log(world.level.map);

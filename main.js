@@ -55,7 +55,7 @@ async function init() {
   //--------------------------
 
   levelState.lastTick = performance.now();
-  gameLoop();
+  await gameLoop();
 }
 
 async function gameLoop() {
@@ -63,7 +63,7 @@ async function gameLoop() {
   levelState.deltaTime = performance.now() - levelState.lastTick;
 
   await update(levelState.deltaTime);
-  render();
+  await render();
 
   if (reset) {
     reset = false;
@@ -184,14 +184,14 @@ async function update(deltaTime) {
 //Render
 //--------------------------
 
-const render = () => {
+async function render() {
   context.resetTransform();
   context.clearRect(0, 0, CONFIG.width, CONFIG.height);
 
   gameObjects.forEach((gameObject) => {
     gameObject.render();
   });
-};
+}
 
 //--------------------------
 //Utilities
@@ -257,7 +257,7 @@ async function loadLevel(level, tilesize) {
   }
 }
 
-function startScreen() {
+async function startScreen() {
   let intro = document.getElementById("start-screen");
   intro.style.width = `${CONFIG.width}px`;
   intro.style.height = `${CONFIG.height}px`;
