@@ -47,7 +47,7 @@ Distributed under the MIT License. See `LICENSE.txt` for more information.
 
 Christof Kuba - christof.kuba@gmail.com
 
-Project Link: [https://github.com/chrisDKkuba/moon_diver](https://github.com/chrisDKkuba/moon_diver)
+Project Link: [https://github.com/chrisDKkuba/moon_diver](https://github.com/chrisdkk/moon_diver)
 
 
 <!-- ACKNOWLEDGMENTS -->
